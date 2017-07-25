@@ -27,6 +27,7 @@ Add this to your `build.sbt`:
 ```
 libraryDependencies ++= Seq(
     "de.lenabrueder" % "context-aware-logging" % "0.1-SNAPSHOT",
+    "de.lenabrueder" % "context-aware-logging-play" % "2.6.0-SNAPSHOT", //only if you want play framework support
     "ch.qos.logback" % "logback-classic" % "1.2.1"
   )
 ```
@@ -86,12 +87,17 @@ leads to
 21:58:40 INFO  my-special-logger - bad example, who wants all headers in every log entry? headers=Host=example.com,Content-Length=123 27b48f15-006f-40e5-be60-4b8285d17b84/3ms
 ```
 
+## Play framework support
+
+You need to import `de.lenabrueder.logging.ImplicitConversions._` and can then `implicit val context: Context = request` in your Action.
+This will automatically create an implicit context from the incoming request.
+
+The version of the play support will follow the play versioning scheme in major and minor version. Patch version is up to the lib itself.
+
 ## TODO
 
 * [ ] write better docs
-* [ ] add more log levels (as soon as scala.meta annotations support 2.12 scala and I understand how to use them)
 * [ ] more testing (see point before this one)
 * [ ] make travis build it
-* [ ] release to maven central
 * [ ] make the output configurable
 * [ ] add possibility to put the map on the thread MDC just before the log writing to allow customization via logger configuration

@@ -1,6 +1,7 @@
 package de.lenabrueder.logging
 
 import de.lenabrueder.logging.Logger.ContextFormatter
+import examples.log
 import org.slf4j.{LoggerFactory, Logger => Underlying}
 
 object Logger {
@@ -53,39 +54,10 @@ object Logger {
 /**a logger implementation that forwards to slf4j. More levels will follow when scalafmt macros work with 2.12.*/
 final class Logger private (val underlying: Underlying, formatter: ContextFormatter = Logger.extendedContextFormatter)
     extends Serializable {
-  def info(message: => String)(implicit context: Context): Unit = {
-    if (underlying.isInfoEnabled) {
-      underlying.info(formatter(message, context))
-    }
-  }
 
-  def info(message: => String, cause: => Throwable)(implicit context: Context): Unit = {
-    if (underlying.isInfoEnabled) {
-      underlying.info(formatter(message, context), cause)
-    }
-  }
-
-  def error(message: => String)(implicit context: Context): Unit = {
-    if (underlying.isErrorEnabled) {
-      underlying.error(formatter(message, context))
-    }
-  }
-
-  def error(message: => String, cause: => Throwable)(implicit context: Context): Unit = {
-    if (underlying.isErrorEnabled) {
-      underlying.error(formatter(message, context), cause)
-    }
-  }
-
-  def debug(message: => String)(implicit context: Context): Unit = {
-    if (underlying.isDebugEnabled) {
-      underlying.debug(formatter(message, context))
-    }
-  }
-
-  def debug(message: => String, cause: => Throwable)(implicit context: Context): Unit = {
-    if (underlying.isDebugEnabled) {
-      underlying.debug(formatter(message, context), cause)
-    }
-  }
+  @log object warn
+  @log object debug
+  @log object info
+  @log object error
+  @log object trace
 }

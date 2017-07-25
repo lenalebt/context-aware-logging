@@ -1,7 +1,5 @@
 package de.lenabrueder.logging
 
-import de.lenabrueder.logging._
-
 object Main {
   val log = Logger("my-special-logger")
 
