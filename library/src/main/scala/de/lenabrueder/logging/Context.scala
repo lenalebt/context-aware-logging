@@ -15,7 +15,7 @@ trait Context {
   def toMap: Map[String, String] = Map("flowId" -> flowId, "elapsed" -> elapsed.toMillis.toString)
 
   /**captures when the flow has been started/initialized*/
-  def startTime: Temporal = LocalDateTime.now
+  def startTime: LocalDateTime = LocalDateTime.now
 
   /**captures how long the flow has been running so far*/
   def elapsed: java.time.Duration = java.time.Duration.between(startTime, LocalDateTime.now)
