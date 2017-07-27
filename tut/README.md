@@ -5,7 +5,7 @@ your application handles multiple requests at the same time, and you want to be 
 to see from each log entry to which request it belongs. It uses SLF4J to abstract from
 the actual logging backend.
 
-By default, it adds the runtime from the start of the flow, as well as the flow-id to the log entry.
+By default, it adds the runtime from the start of the trace, as well as the trace-id to the log entry.
 Example:
 
 ```
@@ -16,10 +16,10 @@ Example:
 21:09:30.560 INFO  com.rocketscience.Main.log - BOOM! 90c0c9a8-55da-403e-8ffc-d39d1c4a9190/820ms
 ```
 
-## Flow-ID?
-It is just an ID that identifies anything that you consider a "flow". By default, UUIDs are used, but
-you can create your own `Context` that includes another type, if you want to. A good example of a flow
-is an incoming request, and I'd recommend to pass a flow id around as a header when starting HTTP requests.
+## Trace-ID?
+It is just an ID that identifies anything that you consider a "trace". By default, UUIDs are used, but
+you can create your own `Context` that includes another type, if you want to. A good example of a trace
+is an incoming request, and I'd recommend to pass a trace id around as a header when starting HTTP requests.
 
 ## Usage
 Add this to your `build.sbt`:
@@ -27,6 +27,7 @@ Add this to your `build.sbt`:
 ```
 libraryDependencies ++= Seq(
     "de.lenabrueder" % "context-aware-logging" % "0.1-SNAPSHOT",
+    "de.lenabrueder" % "context-aware-logging-play" % "2.6.0-SNAPSHOT", //only if you want play framework support
     "ch.qos.logback" % "logback-classic" % "1.2.1"
   )
 ```
@@ -86,12 +87,17 @@ leads to
 21:58:40 INFO  my-special-logger - bad example, who wants all headers in every log entry? headers=Host=example.com,Content-Length=123 27b48f15-006f-40e5-be60-4b8285d17b84/3ms
 ```
 
+## Play framework support
+
+You need to import `de.lenabrueder.logging.ImplicitConversions._` and can then `implicit val context: Context = request` in your Action.
+This will automatically create an implicit context from the incoming request.
+
+The version of the play support will follow the play versioning scheme in major and minor version. Patch version is up to the lib itself.
+
 ## TODO
 
 * [ ] write better docs
-* [ ] add more log levels (as soon as scala.meta annotations support 2.12 scala and I understand how to use them)
 * [ ] more testing (see point before this one)
 * [ ] make travis build it
-* [ ] release to maven central
 * [ ] make the output configurable
 * [ ] add possibility to put the map on the thread MDC just before the log writing to allow customization via logger configuration

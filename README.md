@@ -5,7 +5,7 @@ your application handles multiple requests at the same time, and you want to be 
 to see from each log entry to which request it belongs. It uses SLF4J to abstract from
 the actual logging backend.
 
-By default, it adds the runtime from the start of the flow, as well as the flow-id to the log entry.
+By default, it adds the runtime from the start of the trace, as well as the trace-id to the log entry.
 Example:
 
 ```
@@ -16,10 +16,10 @@ Example:
 21:09:30.560 INFO  com.rocketscience.Main.log - BOOM! 90c0c9a8-55da-403e-8ffc-d39d1c4a9190/820ms
 ```
 
-## Flow-ID?
-It is just an ID that identifies anything that you consider a "flow". By default, UUIDs are used, but
-you can create your own `Context` that includes another type, if you want to. A good example of a flow
-is an incoming request, and I'd recommend to pass a flow id around as a header when starting HTTP requests.
+## Trace-ID?
+It is just an ID that identifies anything that you consider a "trace". By default, UUIDs are used, but
+you can create your own `Context` that includes another type, if you want to. A good example of a trace
+is an incoming request, and I'd recommend to pass a trace id around as a header when starting HTTP requests.
 
 ## Usage
 Add this to your `build.sbt`:

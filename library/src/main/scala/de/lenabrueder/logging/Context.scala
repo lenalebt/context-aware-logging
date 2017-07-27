@@ -9,10 +9,10 @@ trait Context {
   /** The ID of the flow that triggered this log entry.
     * Should be globally unique for something you consider to be a "flow"
     */
-  def flowId: String
+  def traceId: String
 
   /**contains all extra info that should potentially end up in log entries*/
-  def toMap: Map[String, String] = Map("flowId" -> flowId, "elapsed" -> elapsed.toMillis.toString)
+  def toMap: Map[String, String] = Map("traceId" -> traceId, "elapsed" -> elapsed.toMillis.toString)
 
   /**captures when the flow has been started/initialized*/
   def startTime: LocalDateTime = LocalDateTime.now
@@ -22,7 +22,7 @@ trait Context {
 }
 
 trait DefaultContextSettings extends Context {
-  override lazy val flowId: String = DefaultFlowIdGenerator.generate
+  override lazy val traceId: String = DefaultTraceIdGenerator.generate
   override val startTime: LocalDateTime = LocalDateTime.now
 }
 
