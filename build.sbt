@@ -38,7 +38,7 @@ publishTo in ThisBuild := {
 
 useGpg := true
 
-val libVersion = "0.1-SNAPSHOT"
+val libVersion = "0.1"
 
 lazy val metaMacroSettings: Seq[Def.Setting[_]] = Seq(
   // New-style macro annotations are under active development.  As a result, in
@@ -81,17 +81,15 @@ lazy val library = project
       ),
       //Library dependencies
       libraryDependencies ++= Seq(
-        "com.lihaoyi" %% "sourcecode" % "0.1.3",
-        "org.slf4j" % "slf4j-api" % "1.7.23",
-        //for testing
-        "ch.qos.logback" % "logback-classic" % "1.2.1"
+        "com.lihaoyi" %% "sourcecode" % "0.1.4",
+        "org.slf4j" % "slf4j-api" % "1.7.25"
       ),
       // Test dependencies
       libraryDependencies ++= Seq(
         "org.scalatest" %% "scalatest" % "3.0.1",
         "com.github.alexarchambault" %% "scalacheck-shapeless_1.13" % "1.1.3",
         "org.scalacheck" %% "scalacheck" % "1.13.4",
-        "ch.qos.logback" % "logback-classic" % "1.2.1"
+        "ch.qos.logback" % "logback-classic" % "1.2.3"
       ).map(_ % "test"),
       //pom extra info
       publishArtifact in Test := false
@@ -121,7 +119,7 @@ lazy val playlibrary = project
         "org.scalatest" %% "scalatest" % "3.0.1",
         "com.github.alexarchambault" %% "scalacheck-shapeless_1.13" % "1.1.3",
         "org.scalacheck" %% "scalacheck" % "1.13.4",
-        "ch.qos.logback" % "logback-classic" % "1.2.1"
+        "ch.qos.logback" % "logback-classic" % "1.2.3"
       ).map(_ % "test"),
       //pom extra info
       publishMavenStyle := true

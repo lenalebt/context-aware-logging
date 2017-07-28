@@ -1,7 +1,6 @@
 package de.lenabrueder.logging
 
 import java.time.LocalDateTime
-import java.time.temporal.Temporal
 
 /**a context that can be used for logging, which can contain various extra info*/
 trait Context {
