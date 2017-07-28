@@ -38,7 +38,7 @@ publishTo in ThisBuild := {
 
 useGpg := true
 
-val libVersion = "0.1"
+val libVersion = "0.2-SNAPSHOT"
 
 lazy val metaMacroSettings: Seq[Def.Setting[_]] = Seq(
   // New-style macro annotations are under active development.  As a result, in
@@ -112,7 +112,7 @@ lazy val playlibrary = project
       //Library dependencies
       libraryDependencies ++= Seq(
         "com.typesafe.play" %% "play" % "2.6.2" % "provided",
-        "de.lenabrueder" %% "context-aware-logging" % libVersion
+        "de.lenabrueder" %% "context-aware-logging" % "0.1"
       ),
       // Test dependencies
       libraryDependencies ++= Seq(
