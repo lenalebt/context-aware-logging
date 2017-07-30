@@ -1,38 +1,51 @@
 package de.lenabrueder.logging
-
 import javax.inject.Inject
 
-import akka.util.ByteString
-import de.lenabrueder.logging.ImplicitConversions._
-import play.api.libs.streams.Accumulator
-import play.api.libs.typedmap.TypedKey
-import play.api.mvc.{EssentialAction, EssentialFilter, RequestHeader, Result}
+import akka.stream.Materializer
+import play.api.{Logger => PlayLogger}
+import play.api.mvc._
+import play.mvc.Http.HeaderNames
+import play.mvc.Http.HeaderNames._
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
-object LoggingFilter {
-  val RequestContext: TypedKey[Context] = TypedKey.apply[Context]("request-context")
-  final val traceId = "X-Trace-ID"
-}
+/** logs incoming requests with headers when they come in, and their HTTP response code when they finish.
+  *
+  * The filter will also log response times and a trace id when the filter is placed *after* the TraceIdFilter.
+  * Time measurement starts in the TraceIdFilter in any case.
+  */
+class LoggingFilter @Inject()(implicit val mat: Materializer, ec: ExecutionContext) extends Filter {
 
-/**Filter that adds a line of logging when a request has finished, as well as adding a trace id to outgoing responses*/
-class LoggingFilter @Inject()(traceIdHeader: String = LoggingFilter.traceId)(implicit ec: ExecutionContext)
-    extends EssentialFilter {
-  val log = Logger()
+  val log = Logger(this.getClass)
+  val playLogger = PlayLogger(this.getClass)
 
-  override def apply(next: EssentialAction): EssentialAction = new EssentialAction {
-    override def apply(rh: RequestHeader): Accumulator[ByteString, Result] = {
-      implicit val context: Context = rh
+  /** headers that will be displayed with some hints about the content only instead of the whole thing because they may
+    * not be logged (e.g. Authorization)*/
+  val filteredHeaders: Set[String] = Set(AUTHORIZATION, "X-Forward-Authorization")
 
-      val updatedRh = rh
-        .withAttrs(rh.attrs.updated(LoggingFilter.RequestContext, context))
-        .withHeaders(rh.headers.add(traceIdHeader -> context.traceId))
-      val accumulator: Accumulator[ByteString, Result] = next(updatedRh)
+  def filterHeader(header: (String, String)): (String, String) = {
+    val (key, value) = header
+    if (filteredHeaders.contains(key)) {
+      key -> filterHeaderValue(value)
+    } else {
+      key -> value
+    }
+  }
 
-      for { result <- accumulator } yield {
-        log.info(s"${updatedRh.method} ${updatedRh.uri} returned ${result.header.status}")
-        result.withHeaders(traceIdHeader -> context.traceId)
-      }
+  def filterHeaderValue(value: String): String = List.fill(value.length)("X").mkString
+
+  def doLog(message: String)(implicit optContext: Option[Context]) = optContext match {
+    case Some(context) => log.info(message)(context)
+    case None          => playLogger.info(message)
+  }
+
+  def apply(nextFilter: RequestHeader => Future[Result])(rh: RequestHeader): Future[Result] = {
+    implicit val optContext = rh.attrs.get(TraceIdFilter.RequestContext)
+
+    doLog(s"${rh.method} ${rh.uri} with headers ${rh.headers.toSimpleMap.map(filterHeader).mkString(", ")}")
+    nextFilter(rh).map { result =>
+      doLog(s"${rh.method} ${rh.uri} returned ${result.header.status}")
+      result
     }
   }
 }

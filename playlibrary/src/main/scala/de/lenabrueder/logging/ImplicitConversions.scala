@@ -5,12 +5,12 @@ import play.api.mvc.RequestHeader
 import scala.language.implicitConversions
 
 object ImplicitConversions {
-  implicit def requestHeader2Context(rh: RequestHeader): Context = rh.attrs.get(LoggingFilter.RequestContext) match {
+  implicit def requestHeader2Context(rh: RequestHeader): Context = rh.attrs.get(TraceIdFilter.RequestContext) match {
     case Some(context) => context
     case None =>
-      new DefaultContextSettings {
+      new Context {
         override lazy val traceId: String = rh.headers
-          .get(LoggingFilter.traceId)
+          .get(TraceIdFilter.traceId)
           .map(DefaultTraceIdGenerator.extend) getOrElse DefaultTraceIdGenerator.generate
       }
   }

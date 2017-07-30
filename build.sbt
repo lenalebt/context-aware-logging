@@ -112,7 +112,7 @@ lazy val playlibrary = project
       //Library dependencies
       libraryDependencies ++= Seq(
         "com.typesafe.play" %% "play" % "2.6.2" % "provided",
-        "de.lenabrueder" %% "context-aware-logging" % "0.1"
+        "de.lenabrueder" %% "context-aware-logging" % libVersion
       ),
       // Test dependencies
       libraryDependencies ++= Seq(

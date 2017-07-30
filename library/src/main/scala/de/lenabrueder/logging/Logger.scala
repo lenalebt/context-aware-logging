@@ -69,7 +69,6 @@ object Logger {
 
 /**a logger implementation that forwards to slf4j. More levels will follow when scalafmt macros work with 2.12.*/
 final class Logger private (val underlying: Underlying, formatter: ContextFormatter) extends Serializable {
-
   @log object warn
   @log object debug
   @log object info

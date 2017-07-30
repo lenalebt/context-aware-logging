@@ -14,7 +14,7 @@ trait Context {
   def toMap: Map[String, String] = Map("traceId" -> traceId, "elapsed" -> elapsed.toMillis.toString)
 
   /**captures when the flow has been started/initialized*/
-  def startTime: LocalDateTime = LocalDateTime.now
+  val startTime: LocalDateTime = LocalDateTime.now
 
   /**captures how long the flow has been running so far*/
   def elapsed: java.time.Duration = java.time.Duration.between(startTime, LocalDateTime.now)
@@ -22,7 +22,6 @@ trait Context {
 
 trait DefaultContextSettings extends Context {
   override lazy val traceId: String = DefaultTraceIdGenerator.generate
-  override val startTime: LocalDateTime = LocalDateTime.now
 }
 
 object Context {
