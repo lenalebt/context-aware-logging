@@ -39,11 +39,13 @@ Generate a new logger for your class:
 import de.lenabrueder.logging._
 
 object Main {
-  val log = Logger()  //automatically knows the name of the logger from the surrounding class and variable name
+  val log = Logger()         //automatically knows the name of the logger from the surrounding class and variable name
+  val specialLog = Logger()  //you can address this logger in the config as "de.lenabrueder.logging.Main.specialLog" in your config
   
   def main(args:String*): Unit = {
     implicit val context:Context = JobContext("my fancy job")
     log.info("this is just a test")
+    specialLog.info("this is another test")
   }
   
   def process(data:String)(implicit context:Context):String = {
@@ -57,6 +59,7 @@ might output
 
 ```
 21:52:47 INFO  de.lenabrueder.logging.Main.log - this is just a test name=my fancy job 8441f0a9-3d7c-42a9-91e5-5a66523c3f6c/2ms
+21:52:47 INFO  de.lenabrueder.logging.Main.specialLog - this is another test name=my fancy job 8441f0a9-3d7c-42a9-91e5-5a66523c3f6c/2ms
 21:52:47 INFO  de.lenabrueder.logging.Main.log - will replace all the poo with unicorns! name=my fancy job 8441f0a9-3d7c-42a9-91e5-5a66523c3f6c/3ms
 ```
 
@@ -91,6 +94,28 @@ leads to
 
 You need to import `de.lenabrueder.logging.ImplicitConversions._` and can then `implicit val context: Context = request` in your Action.
 This will automatically create an implicit context from the incoming request.
+
+```scala
+package controllers
+
+import javax.inject.{Inject, Singleton}
+import de.lenabrueder.logging._
+import de.lenabrueder.logging.ImplicitConversions._
+
+import play.api.mvc._
+
+import scala.concurrent.Future
+@Singleton
+class HomeController @Inject()(cc: ControllerComponents) extends AbstractController(cc) {
+  val log = Logger()
+  def index = Action.async(parse.anyContent) {implicit request =>
+    implicit val context: Context = request
+    log.info("yay, logging!")
+    Future.successful(Ok(views.html.index(s"Hello $user")))
+  }
+}
+
+```
 
 The version of the play support will follow the play versioning scheme in major and minor version. Patch version is up to the lib itself.
 

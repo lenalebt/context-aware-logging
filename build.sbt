@@ -38,7 +38,8 @@ publishTo in ThisBuild := {
 
 useGpg := true
 
-val libVersion = "0.2-SNAPSHOT"
+val libVersion = "0.2"
+val playLibVersion = "2.6.0"
 
 lazy val metaMacroSettings: Seq[Def.Setting[_]] = Seq(
   // New-style macro annotations are under active development.  As a result, in
@@ -58,7 +59,8 @@ lazy val metaMacroSettings: Seq[Def.Setting[_]] = Seq(
 // Define macros in this project.
 lazy val macros = project.settings(
   metaMacroSettings ++ Seq(
-    name := "context-aware-logging-macros"
+    name := "context-aware-logging-macros",
+    version := libVersion
   ),
   // A dependency on scala.meta is required to write new-style macros, but not
   // to expand such macros.  This is similar to how it works for old-style
@@ -101,7 +103,7 @@ lazy val playlibrary = project
   .settings(
     metaMacroSettings ++ Seq(
       name := "context-aware-logging-play",
-      version := "2.6.0-SNAPSHOT",
+      version := playLibVersion,
       scalacOptions ++= List(
         "-unchecked",
         "-deprecation",
