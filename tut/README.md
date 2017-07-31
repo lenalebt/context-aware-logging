@@ -26,8 +26,8 @@ Add this to your `build.sbt`:
 
 ```
 libraryDependencies ++= Seq(
-    "de.lenabrueder" % "context-aware-logging" % "0.1-SNAPSHOT",
-    "de.lenabrueder" % "context-aware-logging-play" % "2.6.0-SNAPSHOT", //only if you want play framework support
+    "de.lenabrueder" % "context-aware-logging" % "0.2",
+    "de.lenabrueder" % "context-aware-logging-play" % "2.6.0", //only if you want play framework support
     "ch.qos.logback" % "logback-classic" % "1.2.1"
   )
 ```
