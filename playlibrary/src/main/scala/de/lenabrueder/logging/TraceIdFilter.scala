@@ -12,7 +12,18 @@ import scala.concurrent.ExecutionContext
 
 object TraceIdFilter {
   val RequestContext: TypedKey[Context] = TypedKey.apply[Context]("request-context")
-  final val traceId = "X-Trace-ID"
+
+  /**the headers zipkin uses. forwarding them in an istio-based network will give you tracing via zipkin automatically.*/
+  final val additionalTraceHeaders = List("x-trace-id",
+                                          "x-b3-traceid",
+                                          "x-request-id",
+                                          "x-b3-spanid",
+                                          "x-b3-parentspanid",
+                                          "x-b3-sampled",
+                                          "x-b3-flags",
+                                          "x-ot-span-context")
+  final val traceId = "x-b3-traceid"
+  final val extTraceId = "X-Trace-ID"
 }
 
 /**Filter that adds the context to the attrs, as well as adding a trace id to outgoing responses*/
@@ -28,7 +39,7 @@ class TraceIdFilter @Inject()(implicit ec: ExecutionContext) extends EssentialFi
       val accumulator: Accumulator[ByteString, Result] = next(updatedRh)
 
       for { result <- accumulator } yield {
-        result.withHeaders(TraceIdFilter.traceId -> context.traceId)
+        result.withHeaders(context.additionalTraceHeaders.toList: _*)
       }
     }
   }

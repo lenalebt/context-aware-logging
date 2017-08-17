@@ -57,9 +57,10 @@ object Logger {
   /**puts traceid and requesttime on the MDC before writing the log entry*/
   def mdcContextFormatter(message: String, context: Context): String = {
     MDC.put("traceid", context.traceId)
+    MDC.put("exttraceid", context.extTraceId)
     MDC.put("requesttime", context.elapsed.toMillis.toString)
     for {
-      (key, value) <- context.toMap.toList.sortBy(_._1) if !Seq("elapsed", "traceId").contains(key)
+      (key, value) <- context.toMap.toList.sortBy(_._1) if !Seq("elapsed", "traceId", "extTraceId").contains(key)
     } {
       MDC.put(key, value)
     }

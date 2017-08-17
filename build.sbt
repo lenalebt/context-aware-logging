@@ -38,8 +38,11 @@ publishTo in ThisBuild := {
 
 useGpg := true
 
-val libVersion = "0.2"
-val playLibVersion = "2.6.0"
+val libVersion = "0.3-SNAPSHOT"
+/**version of our play library, not the play version we use ourselves*/
+val playLibVersion = "2.6.1-SNAPSHOT"
+/**scala play library we are using*/
+val scalaPlayLibraryVersion = "2.6.3"
 
 lazy val metaMacroSettings: Seq[Def.Setting[_]] = Seq(
   // New-style macro annotations are under active development.  As a result, in
@@ -113,7 +116,8 @@ lazy val playlibrary = project
       ),
       //Library dependencies
       libraryDependencies ++= Seq(
-        "com.typesafe.play" %% "play" % "2.6.2" % "provided",
+        "com.typesafe.play" %% "play" % scalaPlayLibraryVersion % "provided",
+        "com.typesafe.play" %% "play-ahc-ws" % scalaPlayLibraryVersion % "provided",
         "de.lenabrueder" %% "context-aware-logging" % libVersion
       ),
       // Test dependencies

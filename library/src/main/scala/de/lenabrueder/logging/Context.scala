@@ -9,9 +9,14 @@ trait Context {
     * Should be globally unique for something you consider to be a "flow"
     */
   def traceId: String
+  def extTraceId: String
+
+  /**additional tracing headers that are related, but not equal to the trace id header*/
+  def additionalTraceHeaders: Map[String, String]
 
   /**contains all extra info that should potentially end up in log entries*/
-  def toMap: Map[String, String] = Map("traceId" -> traceId, "elapsed" -> elapsed.toMillis.toString)
+  def toMap: Map[String, String] =
+    Map("traceId" -> traceId, "extTraceId" -> extTraceId, "elapsed" -> elapsed.toMillis.toString) ++ additionalTraceHeaders
 
   /**captures when the flow has been started/initialized*/
   val startTime: LocalDateTime = LocalDateTime.now
@@ -22,6 +27,8 @@ trait Context {
 
 trait DefaultContextSettings extends Context {
   override lazy val traceId: String = DefaultTraceIdGenerator.generate
+  override lazy val extTraceId: String = traceId
+  override lazy val additionalTraceHeaders: Map[String, String] = Map.empty
 }
 
 object Context {
