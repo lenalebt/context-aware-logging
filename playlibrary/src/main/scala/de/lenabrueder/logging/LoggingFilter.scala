@@ -9,12 +9,24 @@ import play.mvc.Http.HeaderNames._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-/** logs incoming requests with headers when they come in, and their HTTP response code when they finish.
+/**Configuration for logging*/
+case class LoggingFilterConfiguration(
+    logIncomingHeaders: Boolean,
+    logOutgoingHeaders: Boolean
+) {
+  def this() = this(true, true)
+}
+
+/** logs incoming requests, and their HTTP response code when they finish.
   *
   * The filter will also log response times and a trace id when the filter is placed *after* the TraceIdFilter.
-  * Time measurement starts in the TraceIdFilter in any case.
+  * Time measurement starts in the TraceIdFilter in any case. Can be configured to log headers, too.
   */
-class LoggingFilter @Inject()(implicit val mat: Materializer, ec: ExecutionContext) extends Filter {
+class LoggingFilter @Inject()(implicit val mat: Materializer,
+                              ec: ExecutionContext,
+                              configuration: LoggingFilterConfiguration)
+    extends Filter {
+  import configuration._
 
   val log = Logger(this.getClass)
   val playLogger = PlayLogger(this.getClass)
@@ -42,9 +54,18 @@ class LoggingFilter @Inject()(implicit val mat: Materializer, ec: ExecutionConte
   def apply(nextFilter: RequestHeader => Future[Result])(rh: RequestHeader): Future[Result] = {
     implicit val optContext = rh.attrs.get(TraceIdFilter.RequestContext)
 
-    doLog(s"${rh.method} ${rh.uri} with headers ${rh.headers.toSimpleMap.map(filterHeader).mkString(", ")}")
+    if (logIncomingHeaders) {
+      doLog(s"${rh.method} ${rh.uri} with headers ${rh.headers.toSimpleMap.map(filterHeader).mkString(", ")}")
+    } else {
+      doLog(s"${rh.method} ${rh.uri}")
+    }
     nextFilter(rh).map { result =>
-      doLog(s"${rh.method} ${rh.uri} returned ${result.header.status}")
+      if (logOutgoingHeaders) {
+        doLog(
+          s"${rh.method} ${rh.uri} returned ${result.header.status} with headers ${rh.headers.toSimpleMap.map(filterHeader).mkString(", ")}")
+      } else {
+        doLog(s"${rh.method} ${rh.uri} returned ${result.header.status}")
+      }
       result
     }
   }
