@@ -38,9 +38,9 @@ publishTo in ThisBuild := {
 
 useGpg := true
 
-val libVersion = "0.3"
+val libVersion = "0.4-SNAPSHOT"
 /**version of our play library, not the play version we use ourselves*/
-val playLibVersion = "2.6.1"
+val playLibVersion = "2.6.2-SNAPSHOT"
 /**scala play library we are using*/
 val scalaPlayLibraryVersion = "2.6.3"
 
