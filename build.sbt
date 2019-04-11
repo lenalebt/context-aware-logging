@@ -38,7 +38,7 @@ publishTo in ThisBuild := {
 
 useGpg := true
 
-val libVersion = "0.4-SNAPSHOT"
+val libVersion = "0.5-SNAPSHOT"
 /**version of our play library, not the play version we use ourselves*/
 val playLibVersion = "2.7.0-SNAPSHOT"
 /**scala play library we are using*/
@@ -59,7 +59,7 @@ lazy val library = project
       ),
       //Library dependencies
       libraryDependencies ++= Seq(
-        "com.lihaoyi" %% "sourcecode" % "0.1.4",
+        "com.lihaoyi" %% "sourcecode" % "0.1.6",
         "org.slf4j" % "slf4j-api" % "1.7.25"
       ),
       // Test dependencies
