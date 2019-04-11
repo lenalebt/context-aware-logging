@@ -15,24 +15,26 @@ object ImplicitConversions {
       }
   }
 
-  implicit def requestHeader2Context(rh: RequestHeader): Context = rh.attrs.get(TraceIdFilter.RequestContext) match {
-    case Some(context) => context
-    case None =>
-      new Context {
-        override lazy val traceId: String = rh.headers
-          .get(TraceIdFilter.traceId) getOrElse DefaultTraceIdGenerator.generate
-        override lazy val extTraceId: String = rh.headers
-          .get(TraceIdFilter.extTraceId)
-          .map(DefaultTraceIdGenerator.extend)
-          .getOrElse(traceId)
+  implicit def requestHeader2Context(rh: RequestHeader): Context =
+    rh.attrs.get(TraceIdFilter.RequestContext) match {
+      case Some(context) => context
+      case None =>
+        new Context {
+          override lazy val traceId: String = rh.headers
+            .get(TraceIdFilter.traceId)
+            .getOrElse(DefaultTraceIdGenerator.generate)
+          override lazy val extTraceId: String = rh.headers
+            .get(TraceIdFilter.extTraceId)
+            .map(DefaultTraceIdGenerator.extend)
+            .getOrElse(traceId)
 
-        override lazy val additionalTraceHeaders: Map[String, String] =
-          rh.headers.toSimpleMap
-            .filterKeys(TraceIdFilter.additionalTraceHeaders.contains)
-            .updatedIfNotExists(TraceIdFilter.traceId, traceId)
-            .updated(TraceIdFilter.extTraceId, extTraceId)
-      }
-  }
+          override lazy val additionalTraceHeaders: Map[String, String] =
+            rh.headers.toSimpleMap
+              .filterKeys(TraceIdFilter.additionalTraceHeaders.contains)
+              .updatedIfNotExists(TraceIdFilter.traceId, traceId)
+              .updated(TraceIdFilter.extTraceId, extTraceId)
+        }
+    }
 
   implicit class WSRequestTracer(val req: WSRequest) {
     def addTraceHeaders(implicit context: Context): WSRequest =

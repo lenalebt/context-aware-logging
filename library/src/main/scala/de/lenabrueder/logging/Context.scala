@@ -26,8 +26,8 @@ trait Context {
 }
 
 trait DefaultContextSettings extends Context {
-  override lazy val traceId: String = DefaultTraceIdGenerator.generate
-  override lazy val extTraceId: String = traceId
+  override lazy val traceId: String                             = DefaultTraceIdGenerator.generate
+  override lazy val extTraceId: String                          = traceId
   override lazy val additionalTraceHeaders: Map[String, String] = Map.empty
 }
 

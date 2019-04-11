@@ -9,7 +9,9 @@ object Main {
   }
 
   def main(args: Array[String]): Unit = {
-    implicit val context: Context = MyRequestContext(Seq("Host" -> "example.com", "Content-Length" -> "123"))
+    implicit val context: Context = MyRequestContext(
+      Seq("Host" -> "example.com", "Content-Length" -> "123")
+    )
     log.info("this is just a test")
   }
 }
